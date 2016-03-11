@@ -31,12 +31,14 @@ def cli():
 		sys.exit(-1)
 
 	files = {'file': file}
-	path = ''
-	if len(sys.argv) == 3 and sys.argv[1] == '--shard':
-		path = '/upload?shard=1'
-	else:
-		path = '/upload'
+	# path = ''
+	# if len(sys.argv) == 3 and sys.argv[1] == '--shard':
+	# 	path = '/upload?shard=1'
+	# else:
+	# 	path = '/upload'
 	
+	path = '/upload'
+
 	try:
 		r = requests.post(BASE_URL + path, files=files)
 	except Exception:

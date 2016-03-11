@@ -40,6 +40,9 @@ def download(uid_filename):
 # @payment.required(100)
 def upload_file():
 	sharding = request.args.get('shard')
+	if not os.path.exists(UPLOAD_FOLDER):
+		os.makedirs(UPLOAD_FOLDER)
+
 	if request.method == 'POST':
 		print(request.files['file'])
 		file = request.files['file']

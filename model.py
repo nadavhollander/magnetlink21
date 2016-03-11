@@ -59,7 +59,3 @@ def chunkData(file, filename):
 		except EOFError as e:
 			print(e)
 			break
-
-
-    
-
