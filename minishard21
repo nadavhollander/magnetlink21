@@ -25,15 +25,20 @@ BASE_URL = "http://0.0.0.0:5000"
 
 def cli():
 	try:
-		file = open(sys.argv[1], 'rb')
+		file = open(sys.argv[-1], 'rb')
 	except Exception:
 		print("No such file exists: '" + sys.argv[1] + "'")
 		sys.exit(-1)
 
 	files = {'file': file}
+	path = ''
+	if len(sys.argv) == 3 and sys.argv[1] == '--shard':
+		path = '/upload?shard=1'
+	else:
+		path = '/upload'
 	
 	try:
-		r = requests.post(BASE_URL + '/upload', files=files)
+		r = requests.post(BASE_URL + path, files=files)
 	except Exception:
 		print("Couldn't connect to server -- check your network connection.")
 		sys.exit(-1)
@@ -48,5 +53,9 @@ if __name__ == '__main__':
 	if len(sys.argv) < 2:
 		print('Include filename you would like to upload.')
 		print('Example:')
-		print('./minishard21 /path/to/file')
+		print('./minishard21 [--shard] /path/to/file')
+		print('Include the --shard flag if you wish for your file to be sharded among many servers (for a higher fee)')
+		sys.exit(0)
+	if len(sys.argv) > 2 and sys.argv[1] != '--shard':
+		print("Invalid flag: 'sys.argv[1]'")
 	cli()

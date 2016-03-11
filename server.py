@@ -2,7 +2,8 @@ import os
 from flask import jsonify
 import uuid
 from flask import Flask, request
-from flask import send_from_directory
+from flask import send_file
+import model
 # from flask.ext.pymongo import PyMongo
 
 #import from the 21 Developer Library
@@ -30,23 +31,30 @@ def get_file_price(request):
 def get_download_url(uid):
 	return "/download/{}".format(uid)
 
-@app.route('/download/<uid>', methods=['GET'])
-def download(uid):
-	uploads = app.config['UPLOAD_FOLDER']
-	if os.path.isfile(os.path.join(uploads, uid)):
-		return send_from_directory(uploads, uid, as_attachment=True)
+@app.route('/download/<uid_filename>', methods=['GET'])
+def download(uid_filename):
+	sharded = request.args.get('shard')
+	return send_file(model.fetchFile(uid_filename, sharded=sharded))
 
 @app.route('/upload', methods=['GET', 'POST'])
-@payment.required(100)
+# @payment.required(100)
 def upload_file():
+	sharding = request.args.get('shard')
 	if request.method == 'POST':
 		print(request.files['file'])
-		test_file = request.files['file']
+		file = request.files['file']
 		uid = uuid.uuid4()
-		filename = "{}_{}".format(uid, secure_filename(test_file.filename))
-		test_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		print(test_file.read())
-		return get_download_url(filename)
+		filename = "{}_{}".format(uid, secure_filename(file.filename))
+		
+		if sharding:
+			model.storeFile(file, filename, sharding=True)
+		else:
+			model.storeFile(file, filename)
+		
+		magnet_link = get_download_url(filename)
+		if sharding:
+			magnet_link += '?shard=1'
+		return magnet_link
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
