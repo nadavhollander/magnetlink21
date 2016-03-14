@@ -21,7 +21,7 @@ username = Config().username
 requests = BitTransferRequests(wallet, username)
 
 # Temporary for debug purposes -- replace w/ actual server url when no longer running server / client on same machine
-BASE_URL = "http://0.0.0.0:5000" 
+BASE_URL = "http://ec2-52-33-234-153.us-west-2.compute.amazonaws.com:5000" 
 
 def cli():
 	files = dict()
