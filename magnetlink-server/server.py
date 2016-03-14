@@ -33,13 +33,13 @@ def get_download_url(uid):
 
 @app.route('/download/<uid_filename>', methods=['GET'])
 def download(uid_filename):
-	sharded = request.args.get('shard')
-	return send_file(model.fetchFile(uid_filename, sharded=sharded))
+	# sharded = request.args.get('shard')
+	return send_file(model.fetchFile(uid_filename))
 
 @app.route('/upload', methods=['GET', 'POST'])
-# @payment.required(100)
+@payment.required(100)
 def upload_file():
-	sharding = request.args.get('shard')
+	# sharding = request.args.get('shard')
 	if not os.path.exists(UPLOAD_FOLDER):
 		os.makedirs(UPLOAD_FOLDER)
 
@@ -49,14 +49,16 @@ def upload_file():
 		uid = uuid.uuid4()
 		filename = "{}_{}".format(uid, secure_filename(file.filename))
 		
-		if sharding:
-			model.storeFile(file, filename, sharding=True)
-		else:
-			model.storeFile(file, filename)
+		# if sharding:
+		# 	model.storeFile(file, filename, sharding=True)
+		# else:
+		# 	model.storeFile(file, filename)
 		
+		model.storeFile(file, filename)
+
 		magnet_link = get_download_url(filename)
-		if sharding:
-			magnet_link += '?shard=1'
+		# if sharding:
+		# 	magnet_link += '?shard=1'
 		return magnet_link
 
 if __name__ == '__main__':
