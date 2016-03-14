@@ -4,6 +4,7 @@ magnetlink21 is a command line tool that instantly stores any given file remotel
 Usage:
 
 ```python
+sudo pip3 install pyperclip
 ./magnetlink21 <FILENAME>
 >> Link Copied to your clipboard!
 ```
