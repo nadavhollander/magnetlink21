@@ -25,8 +25,12 @@ payment = Payment(app, wallet)
 def get_file_price(request):
 	byteCount = 0
 	if 'file' in request.files:
-		byteCount = len(request.files['file'].read())
-	return byteCount * SATS_PER_BYTE
+		file = request.files['file']
+		file.seek(0, os.SEEK_END)
+		byteCount = file.tell()
+		file.seek(0, 0)
+	mBCount = max(byteCount / 1000, 1)
+	return mBCount * SATS_PER_BYTE
 
 def get_download_url(uid):
 	return "/download/{}".format(uid)
@@ -37,7 +41,7 @@ def download(uid_filename):
 	return send_file(model.fetchFile(uid_filename))
 
 @app.route('/upload', methods=['GET', 'POST'])
-@payment.required(100)
+@payment.required(get_file_price)
 def upload_file():
 	# sharding = request.args.get('shard')
 	if not os.path.exists(UPLOAD_FOLDER):
@@ -62,4 +66,4 @@ def upload_file():
 		return magnet_link
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
